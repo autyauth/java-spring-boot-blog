@@ -6,7 +6,14 @@ import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,10 +39,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
-        List<PostDto> response = posts.stream().map(this::mapToDTO).toList();
-        return response;
+    public List<PostDto> getAllPosts(int pageNo, int pageSize) {
+        // create a Pageable object
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+//        List<Post> posts = postRepository.findAll(); change to below
+        Page<Post> posts = postRepository.findAll(pageable);
+        List<Post> postList = posts.getContent();
+        return postList.stream().map(this::mapToDTO).toList();
     }
 
     @Override
@@ -54,6 +65,13 @@ public class PostServiceImpl implements PostService {
         setPost(postDto, post);
         Post updatePost = postRepository.save(post);
         return mapToDTO(updatePost);
+    }
+    @Override
+    public void deletePostById(Long id){
+        Post post = postRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Post","id",id)
+                );
+        postRepository.delete(post);
     }
     private void setPost(PostDto postDto, Post post){
         post.setTitle(postDto.getTitle());

@@ -24,10 +24,20 @@ public class PostController {
 //        return postService.createPost(postDto);
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
     }
-    @GetMapping
-    public ResponseEntity<List<PostDto>> getAllPosts() {
-        return new ResponseEntity<>(postService.getAllPosts(), HttpStatus.OK);
-    }
+//    @GetMapping
+//    public ResponseEntity<List<PostDto>> getAllPosts(
+//            @RequestParam(name = "page", defaultValue = "0") int page,
+//            @RequestParam(name = "size", defaultValue = "10") int size
+//    ) {
+//        return new ResponseEntity<>(postService.getAllPosts(page, size), HttpStatus.OK);
+//    }
+@GetMapping
+public ResponseEntity<List<PostDto>> getAllPosts(
+        @RequestParam(name = "pageNo", defaultValue = "0", required = false) int page,
+        @RequestParam(name = "pagesize", defaultValue = "10", required = false) int size
+) {
+    return new ResponseEntity<>(postService.getAllPosts(page, size), HttpStatus.OK);
+}
     @GetMapping ("/{id}")
     public ResponseEntity<PostDto> getPostById(@PathVariable(name = "id") Long id) {
 //        return new ResponseEntity<>(postService.getPostById(id), HttpStatus.OK);
@@ -36,5 +46,10 @@ public class PostController {
     @PutMapping("/{id}")
     public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto,@PathVariable(name = "id") Long id){
         return new ResponseEntity<>(postService.updatePost(postDto, id), HttpStatus.OK);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletePostById(@PathVariable(name = "id")Long id){
+        postService.deletePostById(id);
+        return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
     }
 }
