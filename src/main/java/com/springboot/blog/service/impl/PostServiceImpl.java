@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 public class PostServiceImpl implements PostService{
     private PostRepository postRepository; // PostRepository have all the methods to interact with the database
 
-
     public PostServiceImpl(PostRepository postRepository) {
         this.postRepository = postRepository;
     }
