@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,5 +54,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler { // 
                 error -> errors.put(((FieldError)error).getField(), error.getDefaultMessage())
         );
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(AccessDeniedException.class) // This annotation is used to handle specific exceptions and sending the custom response to the client
+    public ResponseEntity<ErrorDetails> handleAccessDeniedException(ResourceNotFoundException exception,
+                                                                        WebRequest request){
+        ErrorDetails errorDetails = new ErrorDetails(new Date(),exception.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
     }
 }
