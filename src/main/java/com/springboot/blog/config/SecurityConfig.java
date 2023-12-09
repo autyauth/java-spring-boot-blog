@@ -3,7 +3,9 @@ package com.springboot.blog.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -18,9 +20,19 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
+    private UserDetailsService userDetailsService;
+    public SecurityConfig(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
     @Bean
     public static PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager(); // This method is used to get the AuthenticationManager object
+        // AuthenticationManager is used to authenticate a user by username and password
+        // Database Authentication is the most common type of authentication
     }
     @Bean // This annotation is used to create a bean of SecurityFilterChain
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception { // This method is used to configure the HttpSecurity object
@@ -37,20 +49,20 @@ public class SecurityConfig {
         // like <img src="http://localhost:8080/api/posts/1/comments/1" width="0" height="0">
         return http.build();
     }
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.builder()
-                .username("nakorn1")
-                .password(passwordEncoder().encode("nakorn1"))
-                .roles("USER")
-                .build();
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles("ADMIN")
-                .build();
-        return new InMemoryUserDetailsManager(user, admin); // This class is used to create a user in the memory
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        UserDetails user = User.builder()
+//                .username("nakorn1")
+//                .password(passwordEncoder().encode("nakorn1"))
+//                .roles("USER")
+//                .build();
+//        UserDetails admin = User.builder()
+//                .username("admin")
+//                .password(passwordEncoder().encode("admin"))
+//                .roles("ADMIN")
+//                .build();
+//        return new InMemoryUserDetailsManager(user, admin); // This class is used to create a user in the memory
+//    }
 
 
 }
