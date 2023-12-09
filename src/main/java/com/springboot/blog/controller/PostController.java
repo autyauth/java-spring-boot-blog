@@ -3,6 +3,7 @@ package com.springboot.blog.controller;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.payload.PostResponse;
 import com.springboot.blog.service.PostService;
+import com.springboot.blog.utils.AppConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,10 +35,10 @@ public class PostController {
 //    }
 @GetMapping
 public ResponseEntity<PostResponse> getAllPosts(
-        @RequestParam(name = "pageNo", defaultValue = "0", required = false) int page,
-        @RequestParam(name = "pagesize", defaultValue = "10", required = false) int size,
-        @RequestParam(name = "sortBy", defaultValue = "id", required = false) String sortBy,
-        @RequestParam(name = "sortOrder", defaultValue = "ASC", required = false) String sortOrder
+        @RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int page,
+        @RequestParam(name = "pagesize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int size,
+        @RequestParam(name = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+        @RequestParam(name = "sortOrder", defaultValue = AppConstants.DEFAULT_SORT_ORDER, required = false) String sortOrder
 ) {
     return new ResponseEntity<>(postService.getAllPosts(page, size, sortBy, sortOrder), HttpStatus.OK);
 }

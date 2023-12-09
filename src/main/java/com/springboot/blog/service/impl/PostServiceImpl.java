@@ -6,6 +6,7 @@ import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.payload.PostResponse;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.PostService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.domain.Page;
@@ -78,11 +79,13 @@ public class PostServiceImpl implements PostService {
         Post updatePost = postRepository.save(post);
         return mapToDTO(updatePost);
     }
+
     @Override
     public void deletePostById(Long id){
         Post post = postRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Post","id",id)
                 );
+        System.out.println("PostServiceImpl.deletePostById: " + post);
         postRepository.delete(post);
     }
     private void setPost(PostDto postDto, Post post){
