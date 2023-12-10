@@ -1,5 +1,7 @@
 package com.springboot.blog.config;
 
+import com.springboot.blog.security.JwtAuthenticationEntryPoint;
+import com.springboot.blog.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,6 +11,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,13 +19,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
     private UserDetailsService userDetailsService;
-    public SecurityConfig(UserDetailsService userDetailsService) {
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    public SecurityConfig(UserDetailsService userDetailsService,
+                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+                          JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.userDetailsService = userDetailsService;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
     @Bean
     public static PasswordEncoder passwordEncoder(){
@@ -39,14 +49,19 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests( // This method is used to authorize the requests from the client
                 (authorize) ->
 //                        authorize.anyRequest().authenticated() // This method is used to authorize all the requests from the client
-                    authorize.requestMatchers(HttpMethod.GET,"/api/**").permitAll() // This method is used to authorize the GET requests from the client
+                    authorize.requestMatchers(HttpMethod.GET,"/api/**").permitAll() // Method Get will be allowed to access without authentication
+                            .requestMatchers("/api/auth/**").permitAll() // auth will be allowed to access without authentication
                             .anyRequest().authenticated() // This method is used to authorize all the requests from the client
-                ).httpBasic(Customizer.withDefaults());// This method is used to enable the HTTP Basic authentication
-        // httpbasic is a method provided by Spring Security to enable the HTTP Basic authentication
-        // Customizer.withDefaults() is a method provided by Spring Security to set the default values for the HTTP Basic authentication
+                ).exceptionHandling(
+                        (exception) -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)// This method is used to handle the exception
+        ).sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // This method is used to configure the session management
+        // STATELESS means that the server will not create a session for the client
         // csrf is a method provided by Spring Security to disable the Cross-Site Request Forgery
         // attacker can send a request to the server on behalf of the user
         // like <img src="http://localhost:8080/api/posts/1/comments/1" width="0" height="0">
+
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // This method is used to add a filter before the UsernamePasswordAuthenticationFilter
+
         return http.build();
     }
 //    @Bean

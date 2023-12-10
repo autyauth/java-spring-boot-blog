@@ -36,6 +36,7 @@ public class PostController {
 //    ) {
 //        return new ResponseEntity<>(postService.getAllPosts(page, size), HttpStatus.OK);
 //    }
+
 @GetMapping
 public ResponseEntity<PostResponse> getAllPosts(
         @RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int page,
