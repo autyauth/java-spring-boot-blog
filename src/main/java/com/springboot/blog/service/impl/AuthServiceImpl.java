@@ -60,6 +60,10 @@ public class AuthServiceImpl implements AuthService {
         User user = createUser(registerDto);
         return "User registered successfully";
     }
+
+
+
+
     private User createUser(RegisterDto registerDto) {
         User user = new User();
         user.setName(registerDto.getName());

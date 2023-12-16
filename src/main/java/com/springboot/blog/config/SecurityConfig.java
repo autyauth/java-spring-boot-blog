@@ -51,6 +51,7 @@ public class SecurityConfig {
 //                        authorize.anyRequest().authenticated() // This method is used to authorize all the requests from the client
                     authorize.requestMatchers(HttpMethod.GET,"/api/**").permitAll() // Method Get will be allowed to access without authentication
                             .requestMatchers("/api/auth/**").permitAll() // auth will be allowed to access without authentication
+                            //.requestMatchers(HttpMethod.POST,"/api/**").hasAnyAuthority("ROLE_USER","ROLE_ADMIN")
                             .anyRequest().authenticated() // This method is used to authorize all the requests from the client
                 ).exceptionHandling(
                         (exception) -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)// This method is used to handle the exception

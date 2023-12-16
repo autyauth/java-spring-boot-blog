@@ -23,11 +23,12 @@ public class PostController {
     }
 
     // create Post
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
     @PostMapping
-    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto) {
+    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto, @RequestHeader("Authorization") String token) {
 //        return postService.createPost(postDto);
-        return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
+        System.out.println(token);
+        return new ResponseEntity<>(postService.createPost(postDto, token), HttpStatus.CREATED);
     }
 //    @GetMapping
 //    public ResponseEntity<List<PostDto>> getAllPosts(
@@ -51,14 +52,16 @@ public ResponseEntity<PostResponse> getAllPosts(
 //        return new ResponseEntity<>(postService.getPostById(id), HttpStatus.OK);
         return ResponseEntity.ok(postService.getPostById(id));
     }
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<PostDto> updatePost(@Valid @RequestBody PostDto postDto,@PathVariable(name = "id") Long id){
         return new ResponseEntity<>(postService.updatePost(postDto, id), HttpStatus.OK);
     }
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePostById(@PathVariable(name = "id")Long id){
-        postService.deletePostById(id);
+    public ResponseEntity<String> deletePostById(@PathVariable(name = "id")Long id,
+                                                 @RequestHeader("Authorization")String token){
+        postService.deletePostById(id, token);
         return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
     }
 }

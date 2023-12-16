@@ -7,9 +7,9 @@ import com.springboot.blog.payload.PostResponse;
 import java.util.List;
 
 public interface PostService {
-    PostDto createPost(PostDto postDto);
+    PostDto createPost(PostDto postDto, String token);
     PostResponse getAllPosts(int pageNo, int pageSize, String sortBy, String sortOrder);
     PostDto getPostById(Long id);
     PostDto updatePost(PostDto postDto, long id);
-    void deletePostById(Long id);
+    void deletePostById(Long id, String token);
 }
