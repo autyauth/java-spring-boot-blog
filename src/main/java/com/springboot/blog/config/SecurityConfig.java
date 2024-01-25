@@ -24,9 +24,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-    private UserDetailsService userDetailsService;
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private UserDetailsService userDetailsService; // load the user details from the database and check authorization
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint; // set entry point for authentication
+    private JwtAuthenticationFilter jwtAuthenticationFilter; // authenticate a user
     public SecurityConfig(UserDetailsService userDetailsService,
                           JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
                           JwtAuthenticationFilter jwtAuthenticationFilter) {
@@ -42,11 +42,10 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager(); // This method is used to get the AuthenticationManager object
         // AuthenticationManager is used to authenticate a user by username and password
-        // Database Authentication is the most common type of authentication
     }
-    @Bean // This annotation is used to create a bean of SecurityFilterChain
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception { // This method is used to configure the HttpSecurity object
-        http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests( // This method is used to authorize the requests from the client
+        http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests( // used to authorize the requests from the client,
                 (authorize) ->
 //                        authorize.anyRequest().authenticated() // This method is used to authorize all the requests from the client
                     authorize.requestMatchers(HttpMethod.GET,"/api/**").permitAll() // Method Get will be allowed to access without authentication
@@ -54,8 +53,8 @@ public class SecurityConfig {
                             //.requestMatchers(HttpMethod.POST,"/api/**").hasAnyAuthority("ROLE_USER","ROLE_ADMIN")
                             .anyRequest().authenticated() // This method is used to authorize all the requests from the client
                 ).exceptionHandling(
-                        (exception) -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)// This method is used to handle the exception
-        ).sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // This method is used to configure the session management
+                        (exception) -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint) // This method is used to set the entry point for authentication
+        ).sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); 
         // STATELESS means that the server will not create a session for the client
         // csrf is a method provided by Spring Security to disable the Cross-Site Request Forgery
         // attacker can send a request to the server on behalf of the user

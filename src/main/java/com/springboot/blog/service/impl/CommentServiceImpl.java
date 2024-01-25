@@ -42,7 +42,7 @@ public class CommentServiceImpl implements CommentService{
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new ResourceNotFoundException("Post", "id", postId)
         );
-        String username = jwtTokenProvider.getUsernameFromJWT(token);
+        String username = jwtTokenProvider.getUsernameFromJWT(token.substring(7));
         User user = userRepository.findByUsername(username).orElseThrow(
                 () -> new UsernameNotFoundException("User not found with username. " + username)
         );

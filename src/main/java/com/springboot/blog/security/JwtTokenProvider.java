@@ -44,7 +44,7 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
-                    .setSigningKey(key())
+                    .setSigningKey(key()) // setSigningKey() method is used to set the secret key used to sign the JWT
                     .build()
                     .parse(token); // parse the token
             return true;

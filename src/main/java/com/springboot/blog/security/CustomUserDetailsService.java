@@ -35,6 +35,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         // get the roles of the user and convert them to a set of GrantedAuthority objects
         // GrantedAuthority is used by Spring security to check if a user has access to a resource
         // Spring security load the user's roles into the authorities field of the User object from the database
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
     }
 }
